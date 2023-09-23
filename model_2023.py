@@ -38,7 +38,7 @@ def get_scenario(scenario):
                 lidoavgeffbalance[x]*EFFECTIVE_BALANCE_INCREMENT, 
                 validatorscount[x], 
                 eligibleether[x]*EFFECTIVE_BALANCE_INCREMENT/validatorscount[x],
-                spec = 'Bellatrix'
+                spec = 'Capella'
                 )['total_loss'])
     
     result_list = []
@@ -52,7 +52,7 @@ def get_scenario(scenario):
                 lidoavgeffbalance[x]*EFFECTIVE_BALANCE_INCREMENT, 
                 validatorscount[x], 
                 eligibleether[x]*EFFECTIVE_BALANCE_INCREMENT/validatorscount[x], 
-                spec = 'Bellatrix'
+                spec = 'Capella'
                 )['total_loss'])
     df_result = pd.DataFrame({'loss_slashings':result_list_sl, 'loss_offline': result_list}, index = ['scenario_1', 'scenario_2', 'scenario_3'])
     df_result['total_loss'] = df_result.loss_slashings + df_result.loss_offline
@@ -78,7 +78,7 @@ def get_scenarios(scenarios):
 ## Get aggregated results
 # def get_results_offline(exams, epochs_offline):
     
-#     specs = ['Bellatrix']
+#     specs = ['Capella']
 #     results = [get_result_offline(epochs_offline, exams, state, spec) for spec in specs for state in states]
 #     titles = [(state, spec) for spec in specs for state in states]
 #     for result in range(len(results)):
@@ -89,7 +89,7 @@ def get_scenarios(scenarios):
 #     #return results
 
 def get_results_slashing(exams):
-    specs = ['Bellatrix']
+    specs = ['Capella']
     results = [get_result_slashing(exams, state, spec, slashed_validators_porcentage_a, slashed_validators_porcentage_b, slashed_validators_porcentage_c, slashed_validators_porcentage_d) for spec in specs for state in states]
     titles = [(state, spec) for spec in specs for state in states]
     for result in range(len(results)):
@@ -99,7 +99,7 @@ def get_results_slashing(exams):
         print()
     #return results
 
-## Get result for a given state (current, future) and spec (Altair, Bellatrix)
+## Get result for a given state (current, future) and spec (Altair, Capella)
 
 # def get_result_offline(epochs_offline, exams, state, spec):
 
@@ -157,7 +157,7 @@ def get_result_slashing(exams, state, spec, slashed_validators_porcentage_a, sla
 
 def get_exam_offline(epochs_offline, exam, lidoavgbalance, lidoavgeffbalance, validatorscount, avarage_effective_balance, spec):
     dic = {}
-    result = functions.process_offline_validator_bellatrix(epochs_offline, lidoavgbalance, lidoavgeffbalance, validatorscount, avarage_effective_balance) 
+    result = functions.process_offline_validator_Capella(epochs_offline, lidoavgbalance, lidoavgeffbalance, validatorscount, avarage_effective_balance) 
     prob_number_validators_assigned = functions.get_probability_outcomes(exam, validatorscount, 0.99, SYNC_COMMITTEE_SIZE)*result[4]
     dic.update({'offline_count': exam})
     dic.update({'total_loss_offline_penalty': functions.gwei_to_ether((result[0]-lidoavgbalance)*exam)})
@@ -168,7 +168,7 @@ def get_exam_offline(epochs_offline, exam, lidoavgbalance, lidoavgeffbalance, va
 
 def get_exam_slashing(exam, lidoavgbalance, lidoavgeffbalance, validatorscount, avarage_effective_balance, spec):
     dic = {}
-    result = functions.process_slashings_bellatrix(exam, lidoavgbalance, lidoavgeffbalance, validatorscount, avarage_effective_balance)   
+    result = functions.process_slashings_capella(exam, lidoavgbalance, lidoavgeffbalance, validatorscount, avarage_effective_balance)   
     dic.update({'slashings_count': exam})
     dic.update({'total_loss': functions.gwei_to_ether((result[0]-lidoavgbalance)*exam)})
     dic.update({'average_loss': functions.gwei_to_ether(result[0]-lidoavgbalance)})
@@ -186,9 +186,11 @@ average_effective_balance = eligibleether_current/validatorscount_current
 
 # Lido param
 current_lido_deposits = 8644617
+lido_treasury_percentage = 0.50
+print(lido_treasury_percentage)
 scenario_1_lido_treasury = 6215
-scenario_2_lido_treasury = scenario_1_lido_treasury + 35528 * 0.8
-scenario_3_lido_treasury = scenario_2_lido_treasury + (4420000 + 2250000) * 0.8 / 1630
+scenario_2_lido_treasury = scenario_1_lido_treasury + 35528 * lido_treasury_percentage
+scenario_3_lido_treasury = scenario_2_lido_treasury + (4420000 + 2250000) * lido_treasury_percentage / 1630
 
 scenario_1_lido_share = current_lido_deposits/functions.gwei_to_ether(current_epoch_data['eligibleether'])
 scenario_2_lido_share = scenario_1_lido_share
